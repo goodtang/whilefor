@@ -1,0 +1,89 @@
+Install OpenGrok on Windows
+As website of OpenGrok says, its indeed a wicked, fast source browser .
+
+In a much elaborate version:
+
+“OpenGrok is a fast and usable source code search and cross reference engine. It helps you search, cross-reference and navigate your source tree. ”
+
+Many a times while doing software developement using open source tools/frameworks we are forced to look into the source code of theirs for various reasons like debugging, learn or just to know “what’s exactly is going on under the hood”…
+
+One of the easiest ways to get linked to these open source codes is by linking the appropriate source jars or folders to our project from within our IDE. But most of the times, it doesn’t quite make sense to load the heavy duty IDE for looking into couple of lines of code. Moreover this makes every individual in the team to have the source links configured in thier own IDE.
+
+OpenGrok gives a centrialized repository for source search for the whole team and the code can be searched and viewed just through a web browser that we have got in the desktop. All that we need to do is install and deploy the OpenGrok software in a light weight application server like tomcat.
+
+Since OpenGrok is developed in Java it is implicitly platform independent and hence can be installed on either Windows or Unix version in no time.
+
+Even though the OpenGrok website gives a detailed version of how to install the software, I thought it would be nice to give a  installation procedure which could be quickly refered and easily installed. As many of us are still stuck with Windows and I decided to jot down the steps for installing OpenGrok on windows.
+
+Without wasting much of a time. Lets see how to install OpenGrok on any Windows OS and for a sample I have taken the spring source code to be searched through OpenGrok.
+
+For installing OpenGrok on windows, you need the following software downloaded and installed in your system.
+
+JDK 1.5 or above
+Opengrok-0.7.tar.gz from http://opensolaris.org/os/project/opengrok/
+Exuberant Ctags binary for Windows ( ec57w32.zip) from http://ctags.sourceforge.net/
+Apache Tomcat 6 from http://tomcat.apache.org/download-60.cgi
+and finally to test OpenGrok, download the Spring framework source from http://www.springsource.org/download
+
+Steps:
+
+First install the JDK 1.5 or above that you have downloaded. Assuming the you have installed jdk under C://jdk1.6.
+Set the JAVA_HOME for the same as “C://jdk1.6? and the PATH to the java executables as “C://jdk1.6//bin.
+
+Now extract Opengrok-0.7.tar.gz using unzip tools like 7Zip under your downloaded directory.
+Create a folder structure as follows directly under C: drive.
+
+-OpenGrok
+– bin
+– source
+– data
+
+[OpenGrok is the main directory and bin,source,data are sub-directories.]
+
+Extract the Exuberant Ctags binary directly under C:// drive such as “C://ctags57? and add the folder to the Environment Variable’s PATH.
+
+Extract the spring package into the newly created C://OpenGrok//source folder.
+
+Open a command prompt and go to the OpenGrok extracted folder. (C://downloaded//Opengrok-0.7) and ensure that you are in the same directory as where opengrok.jar is located.
+
+From there, run the following java command
+
+java -Xmx1524m -jar opengrok.jar -W “C://OpenGrok//data//configuration.xml” -P -S -v -s “C://OpenGrok//source” -d “C://OpenGrok//data”
+
+ 
+
+转帖注：此处如果使用Xmx1524m有可能启动不了java虚拟机，可以尝试把内存改小一点，比如1024或者512。
+
+
+
+This command would look up for any source available under the source directory and index all the files for searching and as a result it would create a respective configuration.xml file under the “C://OpenGrokdata” folder.
+
+At this stage, we have successfully installed OpenGrok and created a search index for our local source repository.
+
+Finally we need to deploy OpenGrok in tomcat so that we could search for the source files through a web browser. To install tomcat and deploy OpenGrok, the following steps needs to be followed:
+
+First extract/install Tomcat6 under your preferred location. For simplicity, I installed it directly under C://Tomcat6
+
+Now copy “C://downloaded//Opengrok-0.7//source.war” to “C://Tomcat6//webapps” folder.
+
+Start the tomcat server and you can see the source.war is deployed under webapps.
+
+Stop the tomcat server and edit “C://Tomcat6//webapps//source//WEB-INF//web.xml” file.
+
+Look for,
+
+<context-param>
+<param-name>CONFIGURATION</param-name>
+<param-value>/etc/opengrok/data/configuration.xml </param-value>
+<description>Full path to the configuration file where OpenGrok can read it’s configuration</description>
+</context-param>
+
+change the configuration.xml file’s path to appropriate value. In our case it should be C:/OpenGrok/data/Configuration.xml
+
+Save the changes and close the editor.
+
+Restart the tomcat.
+
+Open a web browser and type http://localhost:8080/soruce
+
+If you see the following screen, it means that you have successfully installed OpenGrok.
